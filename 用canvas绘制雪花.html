@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            margin:0;
+            overflow: hidden;
+        }
+        #snow {
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="snow"></canvas>
+
+    <script>
+        var canvas = document.querySelector("#snow");
+        var context = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function snow(){
+            context.save();
+            context.beginPath();//开启一条路径
+
+            context.translate(100,100);//把画布的顶点移动到（100,100）的位置，这个点就是雪花的中心点
+
+            context.moveTo(-20,0);
+            context.lineTo(20,0);
+            context.strokeStyle='#fff';
+            context.lineWidth=5;
+            context.lineCap='round';
+
+
+            var disX = Math.sin(30*Math.PI/180)*20;
+            var disY = Math.sin(60*Math.PI/180)*20;
+
+            context.moveTo(-disX,-disY);
+            context.lineTo(disX,disY);
+
+            context.moveTo(-disX,disY);
+            context.lineTo(disX,-disY);
+
+            context.stroke();
+            context.restore();
+
+
+            context.save();
+            context.beginPath();
+            context.translate(200,200);//把画布的顶点移动到（100,100）的位置，这个点就是雪花的中心点
+
+            context.scale(0.5,0.5);
+            context.rotate(20*Math.PI/180);
+
+            context.moveTo(-20,0);
+            context.lineTo(20,0);
+            context.strokeStyle='#fff';
+            context.lineWidth=5;
+            context.lineCap='round';
+
+
+            var disX = Math.sin(30*Math.PI/180)*20;
+            var disY = Math.sin(60*Math.PI/180)*20;
+
+            context.moveTo(-disX,-disY);
+            context.lineTo(disX,disY);
+
+            context.moveTo(-disX,disY);
+            context.lineTo(disX,-disY);
+
+            context.stroke();
+            context.restore();
+
+        }
+
+        // snow();
+
+        function Snow(x,y,scale,rotate,speedX,speedY,speedR){
+            this.x = x;
+            this.y = y;
+            this.scale = scale;
+            this.rotate = rotate;
+            this.speedX = speedX;
+            this.speedY = speedY;
+            this.speedR = speedR;
+        }
+        Snow.prototype.render = function(){
+            context.save();
+            context.beginPath();
+            context.translate(this.x,this.y);//把画布的顶点移动到（100,100）的位置，这个点就是雪花的中心点
+
+            context.scale(this.scale,this.scale);
+            context.rotate(this.rotate*Math.PI/180);
+
+            context.moveTo(-20,0);
+            context.lineTo(20,0);
+            context.strokeStyle='#fff';
+            context.lineWidth=5;
+            context.lineCap='round';
+
+
+            var disX = Math.sin(30*Math.PI/180)*20;
+            var disY = Math.sin(60*Math.PI/180)*20;
+
+            context.moveTo(-disX,-disY);
+            context.lineTo(disX,disY);
+
+            context.moveTo(-disX,disY);
+            context.lineTo(disX,-disY);
+
+            context.stroke();
+            context.restore();
+
+        }
+        // var snow = new Snow(100, 100, 2, 10, 10, 10, 10);
+		// snow.render();
+
+
+		// var snow1 = new Snow(300, 260, .7, 10, 10, 10, 10);
+		// snow1.render();
+
+        //生成雪花
+        var snowArray = [];
+        function init() {
+            var len = 100;
+
+            for(var i=0;i<len;i++){
+                var x = Math.random() * canvas.width;
+                var scale = Math.random() + 0.5;//缩放的范围
+                var rotate = Math.random() * 60;
+                var speedX = Math.random() + 1;//X的速度范围：1~2
+                var speedY = Math.random() + 5;
+                var speedR = Math.random() * 4 + 2;
+
+                (function(x,y,scale,rotate,speedX,speedY,speedR){
+                    setTimeout(function(){
+                        var snow = new Snow(x,y,scale,rotate,speedX,speedY,speedR);
+                        snow.render();
+
+                        snowArray.push(snow);
+                    },Math.random()*8000);
+                })(x,0,scale,rotate,speedX,speedY,speedR);
+            }
+            snowing();
+        }
+        init();
+        // 下雪
+        function snowing(){
+            setInterval(function(){
+                context.clearRect(0,0,canvas.width,canvas.height);
+                for(var i =0;i<snowArray.length;i++){
+                    snowArray[i].x=(snowArray[i].x+snowArray[i].speedX)%canvas.width;
+                    snowArray[i].y=(snowArray[i].y+snowArray[i].speedY)%canvas.height;
+                    snowArray[i].rotate=(snowArray[i].rotate+snowArray[i].speedR)%60;
+
+                    snowArray[i].render();
+                }
+            },30);
+        }
+    </script>
+</body>
+</html>
